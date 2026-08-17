@@ -1,0 +1,1219 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>sisi | برنامه هفتگی</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* Your existing styles (unchanged) */
+      :root {
+        --bg: #1e304a;
+        --mid: #33669e;
+        --light: #a8d6ff;
+        --ok: #50eb9b;
+        --cancel: #eb5160;
+      }
+      * {
+        font-family: "Vazirmatn", sans-serif;
+        -webkit-tap-highlight-color: transparent;
+        box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        background: linear-gradient(
+          135deg,
+          #1e304a 0%,
+          #33669e 50%,
+          #1e304a 100%
+        );
+        min-height: 100vh;
+        color: #fff;
+        overflow-x: hidden;
+        position: relative;
+        margin: 0;
+      }
+      .paw-pattern {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 0;
+        opacity: 0.06;
+        background-image:
+          radial-gradient(
+            ellipse 12px 8px at 20px 20px,
+            #a8d6ff 50%,
+            transparent 51%
+          ),
+          radial-gradient(
+            circle 3px at 15px 12px,
+            #a8d6ff 50%,
+            transparent 51%
+          ),
+          radial-gradient(
+            circle 3px at 25px 12px,
+            #a8d6ff 50%,
+            transparent 51%
+          ),
+          radial-gradient(
+            circle 3px at 12px 22px,
+            #a8d6ff 50%,
+            transparent 51%
+          ),
+          radial-gradient(circle 3px at 28px 22px, #a8d6ff 50%, transparent 51%);
+        background-size: 80px 80px;
+      }
+      .bubble {
+        position: fixed;
+        border-radius: 50%;
+        background: radial-gradient(
+          circle at 30% 30%,
+          rgba(168, 214, 255, 0.3),
+          rgba(168, 214, 255, 0.05)
+        );
+        pointer-events: none;
+        z-index: 0;
+        animation: floatUp 15s linear infinite;
+      }
+      @keyframes floatUp {
+        0% {
+          transform: translateY(100vh) scale(0);
+          opacity: 0;
+        }
+        10% {
+          opacity: 1;
+        }
+        90% {
+          opacity: 1;
+        }
+        100% {
+          transform: translateY(-100vh) scale(1);
+          opacity: 0;
+        }
+      }
+      .card {
+        background: rgba(51, 102, 158, 0.35);
+        backdrop-filter: blur(14px);
+        border: 2px solid rgba(168, 214, 255, 0.25);
+        border-radius: 28px;
+      }
+      .grid-horizontal {
+        display: grid;
+        grid-template-columns: repeat(7, minmax(160px, 1fr));
+        gap: 12px;
+        overflow-x: auto;
+        padding-bottom: 10px;
+        scroll-snap-type: x mandatory;
+      }
+      .grid-vertical {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 14px;
+      }
+      .day-card {
+        background: linear-gradient(
+          160deg,
+          rgba(30, 48, 74, 0.7),
+          rgba(51, 102, 158, 0.4)
+        );
+        border: 2px solid rgba(168, 214, 255, 0.2);
+        border-radius: 22px;
+        padding: 14px;
+        transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+        position: relative;
+        overflow: hidden;
+        scroll-snap-align: start;
+        display: flex;
+        flex-direction: column;
+      }
+      .day-card::before {
+        content: "";
+        position: absolute;
+        top: -20px;
+        right: -20px;
+        width: 60px;
+        height: 60px;
+        background: radial-gradient(
+          circle,
+          rgba(168, 214, 255, 0.15),
+          transparent
+        );
+        border-radius: 50%;
+      }
+      .day-card:hover {
+        transform: translateY(-6px) rotate(-1deg);
+        border-color: var(--light);
+        box-shadow: 0 15px 35px rgba(168, 214, 255, 0.25);
+      }
+      .day-card.today {
+        background: linear-gradient(
+          160deg,
+          rgba(168, 214, 255, 0.35),
+          rgba(80, 235, 155, 0.15)
+        );
+        border: 3px solid var(--light);
+        box-shadow:
+          0 0 40px rgba(168, 214, 255, 0.5),
+          inset 0 0 20px rgba(168, 214, 255, 0.1);
+        animation: pulse 2.5s ease-in-out infinite;
+      }
+      @keyframes pulse {
+        0%,
+        100% {
+          box-shadow:
+            0 0 40px rgba(168, 214, 255, 0.5),
+            inset 0 0 20px rgba(168, 214, 255, 0.1);
+        }
+        50% {
+          box-shadow:
+            0 0 55px rgba(168, 214, 255, 0.7),
+            inset 0 0 25px rgba(168, 214, 255, 0.15);
+        }
+      }
+      .activity {
+        background: rgba(168, 214, 255, 0.12);
+        border-radius: 14px;
+        padding: 8px 10px;
+        margin-bottom: 6px;
+        font-size: 13px;
+        border-right: 4px solid var(--light);
+        transition: all 0.2s;
+        word-wrap: break-word;
+      }
+      .activity:hover {
+        background: rgba(168, 214, 255, 0.2);
+        transform: translateX(-3px);
+      }
+      .activity-time {
+        font-size: 11px;
+        opacity: 0.8;
+        font-weight: 700;
+        color: var(--light);
+        margin-bottom: 2px;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+      @keyframes cardIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px) scale(0.95);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+      }
+      .day-card {
+        animation: cardIn 0.5s ease-out backwards;
+      }
+      @keyframes wiggle {
+        0%,
+        100% {
+          transform: rotate(0deg);
+        }
+        25% {
+          transform: rotate(-8deg);
+        }
+        75% {
+          transform: rotate(8deg);
+        }
+      }
+      @keyframes float {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-6px);
+        }
+      }
+      .cat-logo {
+        animation: float 3s ease-in-out infinite;
+      }
+      .cat-logo:hover svg {
+        animation: wiggle 0.6s ease-in-out;
+      }
+      .settings-btn {
+        background: rgba(168, 214, 255, 0.15);
+        border: 2px solid rgba(168, 214, 255, 0.3);
+        transition: all 0.3s;
+      }
+      .settings-btn:hover {
+        background: rgba(168, 214, 255, 0.25);
+        transform: rotate(45deg) scale(1.1);
+      }
+      .modal-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(30, 48, 74, 0.85);
+        backdrop-filter: blur(10px);
+        z-index: 100;
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s;
+      }
+      .modal-backdrop.active {
+        opacity: 1;
+        pointer-events: auto;
+      }
+      .modal-content {
+        background: linear-gradient(160deg, #1e304a, #33669e);
+        border: 3px solid var(--light);
+        border-radius: 32px 32px 0 0;
+        padding: 24px 20px 30px;
+        max-width: 600px;
+        width: 100%;
+        max-height: 92vh;
+        overflow-y: auto;
+        transform: translateY(100%);
+        transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+      @media (min-width: 768px) {
+        .modal-backdrop {
+          align-items: center;
+          padding: 20px;
+        }
+        .modal-content {
+          border-radius: 32px;
+          transform: scale(0.9);
+          padding: 24px;
+        }
+        .modal-backdrop.active .modal-content {
+          transform: scale(1);
+        }
+      }
+      .modal-backdrop.active .modal-content {
+        transform: translateY(0);
+      }
+      .modal-handle {
+        width: 50px;
+        height: 5px;
+        background: rgba(168, 214, 255, 0.4);
+        border-radius: 10px;
+        margin: 0 auto 16px;
+      }
+      .btn-container {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin-top: 24px;
+      }
+      @media (min-width: 640px) {
+        .btn-container {
+          flex-direction: row;
+        }
+      }
+      .btn-ok,
+      .btn-cancel {
+        font-weight: 800;
+        border-radius: 18px;
+        padding: 14px;
+        transition: all 0.2s;
+        box-shadow: 0 6px 0 rgba(0, 0, 0, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        width: 100%;
+        border: none;
+        font-size: 16px;
+        cursor: pointer;
+      }
+      .btn-ok {
+        background: var(--ok);
+        color: #1e304a;
+      }
+      .btn-cancel {
+        background: var(--cancel);
+        color: white;
+      }
+      .btn-ok:hover,
+      .btn-cancel:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 0 rgba(0, 0, 0, 0.2);
+      }
+      .btn-ok:active,
+      .btn-cancel:active {
+        transform: translateY(4px);
+        box-shadow: 0 2px 0 rgba(0, 0, 0, 0.2);
+      }
+      .edit-row {
+        background: rgba(168, 214, 255, 0.1);
+        border-radius: 16px;
+        padding: 12px;
+        margin-bottom: 10px;
+        border: 2px solid rgba(168, 214, 255, 0.2);
+        transition: all 0.2s;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .edit-row:focus-within {
+        border-color: var(--light);
+        background: rgba(168, 214, 255, 0.15);
+      }
+      .input-cute {
+        background: rgba(30, 48, 74, 0.6);
+        border: 2px solid rgba(168, 214, 255, 0.25);
+        border-radius: 12px;
+        padding: 10px 12px;
+        color: white;
+        outline: none;
+        width: 100%;
+        transition: all 0.2s;
+        font-size: 16px;
+        box-sizing: border-box;
+        -webkit-appearance: none;
+      }
+      .input-cute:focus {
+        border-color: var(--light);
+        background: rgba(30, 48, 74, 0.8);
+      }
+      ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: rgba(30, 48, 74, 0.3);
+        border-radius: 10px;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: var(--light);
+        border-radius: 10px;
+      }
+      .day-tab {
+        padding: 8px 14px;
+        border-radius: 14px;
+        white-space: nowrap;
+        font-weight: 700;
+        font-size: 14px;
+        transition: all 0.2s;
+        border: 2px solid transparent;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex-shrink: 0;
+      }
+      .day-tab.active {
+        background: var(--light);
+        color: var(--bg);
+        border-color: var(--light);
+        transform: scale(1.05);
+      }
+      .day-tab:not(.active) {
+        background: rgba(168, 214, 255, 0.1);
+        color: white;
+      }
+      .grid-btn {
+        padding: 12px;
+        border-radius: 16px;
+        border: 2px solid transparent;
+        background: rgba(168, 214, 255, 0.1);
+        color: white;
+        font-weight: 700;
+        transition: all 0.2s;
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+      }
+      .grid-btn.active {
+        background: var(--light);
+        color: var(--bg);
+        border-color: var(--light);
+        transform: scale(1.02);
+      }
+      .toast {
+        position: fixed;
+        bottom: 30px;
+        left: 50%;
+        transform: translateX(-50%) translateY(100px);
+        background: var(--light);
+        color: var(--bg);
+        padding: 14px 28px;
+        border-radius: 20px;
+        font-weight: 800;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        opacity: 0;
+        transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        z-index: 200;
+        pointer-events: none;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .toast.show {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+      .today-badge {
+        background: var(--ok);
+        color: var(--bg);
+        padding: 3px 10px;
+        border-radius: 20px;
+        font-size: 10px;
+        font-weight: 800;
+        animation: float 2s ease-in-out infinite;
+      }
+      .empty-day {
+        text-align: center;
+        padding: 16px 8px;
+        opacity: 0.5;
+        font-size: 13px;
+      }
+      .header-sticky {
+        position: sticky;
+        top: 0;
+        z-index: 20;
+        background: linear-gradient(
+          180deg,
+          rgba(30, 48, 74, 0.95) 0%,
+          rgba(30, 48, 74, 0.7) 80%,
+          transparent 100%
+        );
+        backdrop-filter: blur(8px);
+        padding: 16px 0 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="paw-pattern"></div>
+    <div
+      class="bubble"
+      style="width: 60px; height: 60px; left: 10%; animation-delay: 0s"
+    ></div>
+    <div
+      class="bubble"
+      style="width: 40px; height: 40px; left: 30%; animation-delay: 3s"
+    ></div>
+    <div
+      class="bubble"
+      style="width: 80px; height: 80px; left: 60%; animation-delay: 6s"
+    ></div>
+    <div
+      class="bubble"
+      style="width: 50px; height: 50px; left: 80%; animation-delay: 9s"
+    ></div>
+
+    <div class="relative z-10 min-h-screen px-3 sm:px-4 pb-8">
+      <header class="header-sticky max-w-7xl mx-auto">
+        <div class="flex items-center justify-between gap-3">
+          <div class="flex items-center gap-3">
+            <div class="cat-logo">
+              <svg
+                width="52"
+                height="52"
+                viewBox="0 0 100 100"
+                xmlns="http://www.w3.org/2000/svg"
+                class="drop-shadow-lg"
+              >
+                <path
+                  d="M 22 35 L 28 12 L 42 30 Z"
+                  fill="#a8d6ff"
+                  stroke="#1e304a"
+                  stroke-width="2"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M 78 35 L 72 12 L 58 30 Z"
+                  fill="#a8d6ff"
+                  stroke="#1e304a"
+                  stroke-width="2"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M 27 30 L 30 18 L 36 28 Z"
+                  fill="#EB5160"
+                  opacity="0.8"
+                />
+                <path
+                  d="M 73 30 L 70 18 L 64 28 Z"
+                  fill="#EB5160"
+                  opacity="0.8"
+                />
+                <ellipse
+                  cx="50"
+                  cy="58"
+                  rx="36"
+                  ry="32"
+                  fill="#a8d6ff"
+                  stroke="#1e304a"
+                  stroke-width="2.5"
+                />
+                <circle cx="32" cy="65" r="7" fill="#ffb3c1" opacity="0.8" />
+                <circle cx="68" cy="65" r="7" fill="#ffb3c1" opacity="0.8" />
+                <ellipse cx="38" cy="52" rx="4.5" ry="5.5" fill="#1e304a" />
+                <circle cx="39.5" cy="50" r="1.8" fill="white" />
+                <ellipse cx="62" cy="52" rx="4.5" ry="5.5" fill="#1e304a" />
+                <circle cx="63.5" cy="50" r="1.8" fill="white" />
+                <path
+                  d="M 46 64 Q 50 68 54 64 Q 50 62 46 64 Z"
+                  fill="#EB5160"
+                  stroke="#1e304a"
+                  stroke-width="1"
+                />
+                <path
+                  d="M 50 66 Q 50 70 46 70 M 50 66 Q 50 70 54 70"
+                  stroke="#1e304a"
+                  stroke-width="1.5"
+                  fill="none"
+                  stroke-linecap="round"
+                />
+                <path
+                  d="M 30 60 Q 22 58 18 62 M 30 62 Q 22 64 18 68"
+                  stroke="#1e304a"
+                  stroke-width="1.5"
+                  fill="none"
+                  stroke-linecap="round"
+                />
+                <path
+                  d="M 70 60 Q 78 58 82 62 M 70 62 Q 78 64 82 68"
+                  stroke="#1e304a"
+                  stroke-width="1.5"
+                  fill="none"
+                  stroke-linecap="round"
+                />
+              </svg>
+            </div>
+            <div>
+              <h1
+                class="text-4xl sm:text-5xl font-black tracking-tight"
+                style="
+                  color: var(--light);
+                  text-shadow: 4px 4px 0 rgba(30, 48, 74, 0.5);
+                "
+              >
+                sisi
+              </h1>
+              <p class="text-xs opacity-80 font-bold tracking-wider">
+                برنامه هفتگی من
+              </p>
+            </div>
+          </div>
+          <button
+            id="settingsBtn"
+            class="settings-btn p-3 rounded-2xl"
+            aria-label="تنظیمات"
+          >
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              style="color: var(--light)"
+            >
+              <circle cx="12" cy="12" r="3"></circle>
+              <path
+                d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"
+              ></path>
+            </svg>
+          </button>
+        </div>
+        <div class="text-center mt-3">
+          <p id="todayLabel" class="text-sm font-bold opacity-90"></p>
+        </div>
+      </header>
+
+      <main id="scheduleContainer" class="max-w-7xl mx-auto mt-4 relative z-10">
+        <div class="text-center py-20 opacity-60" id="loadingIndicator">
+          <svg
+            class="animate-spin inline-block"
+            width="40"
+            height="40"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#a8d6ff"
+            stroke-width="2"
+          >
+            <circle cx="12" cy="12" r="10" opacity="0.3" />
+            <path d="M12 2a10 10 0 0 1 10 10" />
+          </svg>
+          <p class="mt-2 font-bold">در حال بارگذاری...</p>
+        </div>
+      </main>
+
+      <footer class="text-center mt-8 opacity-50 text-xs">
+        <p>says meow! · ساخته شده با ❤️</p>
+      </footer>
+    </div>
+
+    <div id="settingsModal" class="modal-backdrop">
+      <div class="modal-content">
+        <div class="modal-handle"></div>
+
+        <div class="flex items-center justify-between mb-5">
+          <h2
+            class="text-2xl font-black flex items-center gap-2"
+            style="color: var(--light)"
+          >
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <circle cx="12" cy="12" r="3"></circle>
+              <path
+                d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"
+              ></path>
+            </svg>
+            تنظیمات
+          </h2>
+          <button
+            id="closeSettings"
+            class="p-2 rounded-xl hover:bg-white/10 transition"
+            aria-label="بستن"
+          >
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+
+        <div class="card p-4 mb-5">
+          <h3 class="font-black mb-3 flex items-center gap-2 text-base">
+            حالت نمایش جدول
+          </h3>
+          <div class="grid grid-cols-2 gap-3">
+            <button id="gridHorizontalBtn" class="grid-btn">
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <rect x="3" y="3" width="7" height="7" />
+                <rect x="14" y="3" width="7" height="7" />
+                <rect x="14" y="14" width="7" height="7" />
+                <rect x="3" y="14" width="7" height="7" />
+              </svg>
+              <span>افقی</span>
+            </button>
+            <button id="gridVerticalBtn" class="grid-btn">
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <rect x="3" y="3" width="18" height="7" />
+                <rect x="3" y="14" width="18" height="7" />
+              </svg>
+              <span>عمودی</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="card p-4 mb-5">
+          <h3 class="font-black mb-3 flex items-center gap-2 text-base">
+            ویرایش برنامه
+          </h3>
+          <div
+            class="flex gap-2 overflow-x-auto pb-2 mb-4"
+            id="dayTabs"
+            style="scrollbar-width: thin"
+          ></div>
+          <div
+            id="activitiesEditor"
+            class="max-h-[40vh] overflow-y-auto pr-1"
+          ></div>
+          <button
+            id="addActivityBtn"
+            class="mt-3 w-full p-3 rounded-2xl border-2 border-dashed transition hover:bg-white/5 font-bold flex items-center justify-center gap-2"
+            style="border-color: var(--light); color: var(--light)"
+          >
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+            افزودن فعالیت
+          </button>
+        </div>
+
+        <div class="btn-container">
+          <button id="cancelBtn" class="btn-cancel">
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+            لغو تغییرات
+          </button>
+          <button id="okBtn" class="btn-ok">
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+            ذخیره تغییرات
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div id="toast" class="toast">
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <polyline points="20 6 9 17 4 12" />
+      </svg>
+      <span id="toastText">ذخیره شد!</span>
+    </div>
+
+    <script>
+      // ---------- icons (unchanged) ----------
+      const icons = {
+        paw: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="4" r="2"/><circle cx="18" cy="8" r="2"/><circle cx="20" cy="16" r="2"/><path d="M9 10a5 5 0 0 1 5 5v3.5a3.5 3.5 0 0 1-6.84 1.045Q6.52 17.48 4.46 16.84A3.5 3.5 0 0 1 5.5 10Z"/></svg>',
+        sun: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>',
+        moon: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>',
+        flower:
+          '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 9V5M12 19v-4M9 12H5M19 12h-4M10.24 10.24L7.76 7.76M16.24 16.24l-2.48-2.48M13.76 10.24L16.24 7.76M7.76 16.24l2.48-2.48"/></svg>',
+        clover:
+          '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>',
+        star: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>',
+        smile:
+          '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>',
+      };
+
+      // ---------- days (unchanged) ----------
+      const days = [
+        { id: 6, name: "شنبه", icon: icons.paw },
+        { id: 0, name: "یکشنبه", icon: icons.sun },
+        { id: 1, name: "دوشنبه", icon: icons.moon },
+        { id: 2, name: "سه‌شنبه", icon: icons.flower },
+        { id: 3, name: "چهارشنبه", icon: icons.clover },
+        { id: 4, name: "پنجشنبه", icon: icons.star },
+        { id: 5, name: "جمعه", icon: icons.smile },
+      ];
+
+      // ---------- global state ----------
+      let schedule = {}; // will be loaded from server
+      let gridMode = "vertical"; // will be loaded from server
+      let editSchedule = {}; // copy used in modal
+      let tempGridMode = "vertical"; // temporary grid mode inside modal
+      let originalGridMode = "vertical"; // to revert on cancel
+
+      const today = new Date().getDay();
+      let currentEditDay = today;
+
+      // DOM refs
+      const container = document.getElementById("scheduleContainer");
+      const loadingIndicator = document.getElementById("loadingIndicator");
+      const settingsModal = document.getElementById("settingsModal");
+      const settingsBtn = document.getElementById("settingsBtn");
+      const closeSettings = document.getElementById("closeSettings");
+      const okBtn = document.getElementById("okBtn");
+      const cancelBtn = document.getElementById("cancelBtn");
+      const gridHorizontalBtn = document.getElementById("gridHorizontalBtn");
+      const gridVerticalBtn = document.getElementById("gridVerticalBtn");
+      const dayTabs = document.getElementById("dayTabs");
+      const activitiesEditor = document.getElementById("activitiesEditor");
+      const addActivityBtn = document.getElementById("addActivityBtn");
+      const todayLabel = document.getElementById("todayLabel");
+      const toast = document.getElementById("toast");
+      const toastText = document.getElementById("toastText");
+
+      // ---------- helper functions (unchanged) ----------
+      function escapeHtml(str) {
+        if (!str) return "";
+        const div = document.createElement("div");
+        div.textContent = str;
+        return div.innerHTML;
+      }
+
+      function showToast(msg) {
+        toastText.textContent = msg;
+        toast.classList.add("show");
+        setTimeout(() => toast.classList.remove("show"), 2200);
+      }
+
+      // ---------- render main schedule ----------
+      function renderSchedule() {
+        container.innerHTML = "";
+        const grid = document.createElement("div");
+        grid.className =
+          gridMode === "horizontal" ? "grid-horizontal" : "grid-vertical";
+
+        days.forEach((day, idx) => {
+          const card = document.createElement("div");
+          card.className = "day-card" + (day.id === today ? " today" : "");
+          card.id = `day-${day.id}`;
+          card.style.animationDelay = `${idx * 0.05}s`;
+
+          const activities = schedule[day.id] || [];
+          const sortedActivities = [...activities].sort((a, b) =>
+            (a.time || "").localeCompare(b.time || ""),
+          );
+
+          let activitiesHtml = "";
+          if (sortedActivities.length === 0) {
+            activitiesHtml =
+              '<div class="empty-day">راحتیِ گربه!<br><span class="text-xs opacity-70">برنامه‌ای نیست</span></div>';
+          } else {
+            activitiesHtml = sortedActivities
+              .map(
+                (act) => `
+              <div class="activity">
+                <span class="activity-time">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                  ${act.time || ""}
+                </span>
+                <div>${escapeHtml(act.activity)}</div>
+              </div>
+            `,
+              )
+              .join("");
+          }
+
+          card.innerHTML = `
+            <div class="flex items-center justify-between mb-3 pb-2 border-b-2 border-white/10">
+              <h3 class="font-black text-base sm:text-lg flex items-center gap-2">
+                <span class="text-xl sm:text-2xl" style="color:var(--light);">${day.icon}</span>
+                <span style="color:var(--light);">${day.name}</span>
+              </h3>
+              ${day.id === today ? '<span class="today-badge">امروز</span>' : ""}
+            </div>
+            <div class="space-y-1.5 flex-1">${activitiesHtml}</div>
+          `;
+          grid.appendChild(card);
+        });
+
+        container.appendChild(grid);
+        // remove loading indicator if present
+        const loadInd = document.getElementById("loadingIndicator");
+        if (loadInd) loadInd.style.display = "none";
+        setTimeout(scrollToToday, 400);
+      }
+
+      function scrollToToday() {
+        const todayCard = document.getElementById(`day-${today}`);
+        if (!todayCard) return;
+        const rect = todayCard.getBoundingClientRect();
+        if (rect.top < 0 || rect.bottom > window.innerHeight) {
+          todayCard.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+      }
+
+      // ---------- modal editor functions ----------
+      function renderDayTabs() {
+        dayTabs.innerHTML = "";
+        days.forEach((day) => {
+          const btn = document.createElement("button");
+          btn.className =
+            "day-tab" + (day.id === currentEditDay ? " active" : "");
+          btn.innerHTML = `${day.icon} ${day.name}`;
+          btn.onclick = () => {
+            currentEditDay = day.id;
+            renderDayTabs();
+            renderActivitiesEditor();
+          };
+          dayTabs.appendChild(btn);
+        });
+        const activeTab = dayTabs.querySelector(".active");
+        if (activeTab)
+          activeTab.scrollIntoView({
+            behavior: "smooth",
+            block: "nearest",
+            inline: "center",
+          });
+      }
+
+      function renderActivitiesEditor() {
+        activitiesEditor.innerHTML = "";
+        const activities = editSchedule[currentEditDay] || [];
+
+        if (activities.length === 0) {
+          activitiesEditor.innerHTML = `
+            <div class="empty-day flex flex-col items-center gap-2 py-6">
+              <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.5"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+              <span>هیچ فعالیتی!</span>
+              <small class="opacity-70">یه چیز جدید اضافه کن!</small>
+            </div>`;
+          return;
+        }
+
+        const sorted = [...activities]
+          .map((a, originalIdx) => ({ ...a, originalIdx }))
+          .sort((a, b) => (a.time || "").localeCompare(b.time || ""));
+
+        sorted.forEach((act) => {
+          const row = document.createElement("div");
+          row.className = "edit-row";
+          row.innerHTML = `
+            <div class="flex items-center gap-2">
+              <input type="time" value="${act.time || ""}" class="input-cute flex-1 min-w-0" data-idx="${act.originalIdx}" data-field="time">
+              <button class="del-btn p-2.5 rounded-xl hover:bg-red-500/20 transition flex-shrink-0" data-idx="${act.originalIdx}" style="color:var(--cancel);" aria-label="حذف">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+              </button>
+            </div>
+            <input type="text" value="${escapeHtml(act.activity)}" class="input-cute w-full" data-idx="${act.originalIdx}" data-field="activity" placeholder="چی می‌کنی؟" maxlength="100">
+          `;
+          activitiesEditor.appendChild(row);
+        });
+
+        activitiesEditor.querySelectorAll("input").forEach((input) => {
+          input.oninput = (e) => {
+            const idx = parseInt(e.target.dataset.idx);
+            const field = e.target.dataset.field;
+            if (
+              editSchedule[currentEditDay] &&
+              editSchedule[currentEditDay][idx]
+            ) {
+              editSchedule[currentEditDay][idx][field] = e.target.value;
+            }
+          };
+        });
+
+        activitiesEditor.querySelectorAll(".del-btn").forEach((btn) => {
+          btn.onclick = (e) => {
+            const idx = parseInt(e.currentTarget.dataset.idx);
+            editSchedule[currentEditDay].splice(idx, 1);
+            renderActivitiesEditor();
+          };
+        });
+      }
+
+      function updateGridButtons() {
+        gridHorizontalBtn.classList.toggle(
+          "active",
+          tempGridMode === "horizontal",
+        );
+        gridVerticalBtn.classList.toggle("active", tempGridMode === "vertical");
+      }
+
+      // ---------- open/close modal ----------
+      function openSettings() {
+        // copy current schedule and grid mode into temp variables
+        editSchedule = JSON.parse(JSON.stringify(schedule));
+        tempGridMode = gridMode;
+        originalGridMode = gridMode;
+        currentEditDay = today;
+        renderDayTabs();
+        renderActivitiesEditor();
+        updateGridButtons();
+        settingsModal.classList.add("active");
+        document.body.style.overflow = "hidden";
+      }
+
+      function closeSettingsModal() {
+        settingsModal.classList.remove("active");
+        document.body.style.overflow = "";
+      }
+
+      // ---------- load data from server ----------
+      async function loadData() {
+        try {
+          const res = await fetch("/api/schedule");
+          const data = await res.json();
+          schedule = data.schedule;
+          gridMode = data.gridMode || "vertical";
+          // fallback: if any day missing, use empty array
+          days.forEach((d) => {
+            if (!schedule[d.id]) schedule[d.id] = [];
+          });
+          renderSchedule();
+        } catch (e) {
+          console.error("Failed to load data", e);
+          showToast("خطا در بارگذاری داده");
+          // use default hardcoded (fallback) - but we won't have default here, we can load from a default object
+          // We'll define a minimal default schedule
+          const fallback = {
+            0: [{ time: "08:00", activity: "صبحانه" }],
+            1: [{ time: "09:00", activity: "کار" }],
+            2: [{ time: "10:00", activity: "استراحت" }],
+            3: [{ time: "11:00", activity: "ناهار" }],
+            4: [{ time: "12:00", activity: "بازی" }],
+            5: [{ time: "13:00", activity: "فیلم" }],
+            6: [{ time: "14:00", activity: "آماده‌سازی" }],
+          };
+          schedule = fallback;
+          gridMode = window.innerWidth < 768 ? "vertical" : "horizontal";
+          renderSchedule();
+        }
+        // update today label
+        todayLabel.textContent = `امروز ${days.find((d) => d.id === today).name} هستیم!`;
+      }
+
+      // ---------- save data to server ----------
+      async function saveToServer(newSchedule, newGridMode) {
+        try {
+          const res = await fetch("/api/schedule", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              schedule: newSchedule,
+              gridMode: newGridMode,
+            }),
+          });
+          if (res.ok) {
+            showToast("ذخیره شد!");
+          } else {
+            showToast("خطا در ذخیره");
+          }
+        } catch (e) {
+          console.error("Save error", e);
+          showToast("خطا در ارتباط با سرور");
+        }
+      }
+
+      // ---------- event listeners ----------
+      settingsBtn.onclick = openSettings;
+      closeSettings.onclick = () => {
+        // revert grid mode and close
+        gridMode = originalGridMode;
+        renderSchedule();
+        closeSettingsModal();
+      };
+      settingsModal.onclick = (e) => {
+        if (e.target === settingsModal) {
+          // revert grid mode and close
+          gridMode = originalGridMode;
+          renderSchedule();
+          closeSettingsModal();
+        }
+      };
+
+      // OK button: save schedule and grid mode
+      okBtn.onclick = async () => {
+        // clean empty entries
+        Object.keys(editSchedule).forEach((dayId) => {
+          if (Array.isArray(editSchedule[dayId])) {
+            editSchedule[dayId] = editSchedule[dayId].filter(
+              (a) => a.activity.trim() !== "" || a.time !== "",
+            );
+          }
+        });
+        // update global schedule and gridMode
+        schedule = JSON.parse(JSON.stringify(editSchedule));
+        gridMode = tempGridMode;
+        // save to server
+        await saveToServer(schedule, gridMode);
+        renderSchedule();
+        closeSettingsModal();
+      };
+
+      // Cancel button: revert schedule and grid mode
+      cancelBtn.onclick = () => {
+        // revert grid mode
+        gridMode = originalGridMode;
+        renderSchedule();
+        closeSettingsModal();
+        showToast("لغو شد");
+      };
+
+      // Grid buttons in modal: only update tempGridMode and UI preview
+      gridHorizontalBtn.onclick = () => {
+        tempGridMode = "horizontal";
+        updateGridButtons();
+        // preview in main view (behind modal)
+        gridMode = tempGridMode;
+        renderSchedule();
+      };
+      gridVerticalBtn.onclick = () => {
+        tempGridMode = "vertical";
+        updateGridButtons();
+        gridMode = tempGridMode;
+        renderSchedule();
+      };
+
+      // Add activity button
+      addActivityBtn.onclick = () => {
+        if (!editSchedule[currentEditDay]) editSchedule[currentEditDay] = [];
+        editSchedule[currentEditDay].push({ time: "12:00", activity: "" });
+        renderActivitiesEditor();
+        setTimeout(() => {
+          const inputs =
+            activitiesEditor.querySelectorAll('input[type="text"]');
+          if (inputs.length > 0) inputs[inputs.length - 1].focus();
+        }, 100);
+      };
+
+      // keyboard escape
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && settingsModal.classList.contains("active")) {
+          gridMode = originalGridMode;
+          renderSchedule();
+          closeSettingsModal();
+        }
+      });
+
+      // responsive: on resize, if not in modal, we can adjust grid mode automatically?
+      // We'll let user control via settings, so we don't auto-switch.
+
+      // start app
+      loadData();
+    </script>
+  </body>
+</html>
