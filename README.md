@@ -1,7 +1,5 @@
 # cici-web
 
-[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/template/deploy?template=https://github.com/cicirailway/cici-web)
-
 A simple web application built with Python and Flask.
 
 ## Features
